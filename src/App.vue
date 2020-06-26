@@ -299,11 +299,12 @@ export default {
         });
         return;
       }
-      var i = 1;
+      var i = 0;
       mv.SMS.to = `${mv.data[i][mv.columnaDestinatarios]}`;
       mv.SMS.message = mv.smsPreview;
       mv.sendSMS();
       mv.data[i].enviado = "Si";
+      i+=1
       var interval = setInterval(function() {
         mv.dataIndex = i;
         mv.SMS.to = `${mv.data[i][mv.columnaDestinatarios]}`;
