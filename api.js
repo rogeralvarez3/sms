@@ -4,10 +4,12 @@ const bodyParser = require("body-parser")
 const cors = require("cors")
 const IO = require("socket.io")
 const db = require("./db")
+const path = require("path")
 
 app.use(bodyParser.json());
 app.use(cors())
 
+app.use(express.static(path.resolve(__dirname,'dist')))
 app.get("/",(req,res)=>{
     res.send("Hola, soy el servidor")
 })

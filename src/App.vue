@@ -8,14 +8,7 @@
       </v-btn>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn
-            icon
-            dark
-            small
-            class="ml-2 mr-2"
-            v-on="on"
-            @click="dlgSMS = true"
-          >
+          <v-btn icon dark small class="ml-2 mr-2" v-on="on" @click="dlgSMS = true">
             <v-icon>mdi-message</v-icon>
           </v-btn>
         </template>
@@ -49,10 +42,7 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-              <v-textarea
-                label="Escriba aqui el mensaje"
-                v-model="mensaje"
-              ></v-textarea>
+              <v-textarea label="Escriba aqui el mensaje" v-model="mensaje"></v-textarea>
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions class="grey lighten-4">
@@ -64,9 +54,7 @@
           </v-card>
           <v-layout width="1%"></v-layout>
           <v-card width="49.5%">
-            <v-card-title class="grey lighten-4"
-              >Vista previa del mensaje</v-card-title
-            >
+            <v-card-title class="grey lighten-4">Vista previa del mensaje</v-card-title>
             <v-divider></v-divider>
             <v-card-text>
               <v-textarea disabled v-model="smsPreview"></v-textarea>
@@ -97,9 +85,7 @@
                   :key="i"
                   :class="row.enviado == 'Si' ? 'green--text' : ''"
                 >
-                  <td v-for="col in cols" :key="col.value + i">
-                    {{ row[col.value] }}
-                  </td>
+                  <td v-for="col in cols" :key="col.value + i">{{ row[col.value] }}</td>
                 </tr>
               </tbody>
             </v-simple-table>
@@ -114,14 +100,7 @@
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn
-                fab
-                dark
-                @click="dlgSMS = false"
-                small
-                color="red"
-                v-on="on"
-              >
+              <v-btn fab dark @click="dlgSMS = false" small color="red" v-on="on">
                 <v-icon small>mdi-close</v-icon>
               </v-btn>
             </template>
@@ -130,16 +109,8 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <v-text-field
-            label="Número de destino:"
-            type="phone"
-            max="8"
-            v-model="SMS.to"
-          ></v-text-field>
-          <v-textarea
-            label="Escriba aquí el mensaje:"
-            v-model="SMS.message"
-          ></v-textarea>
+          <v-text-field label="Número de destino:" type="phone" max="8" v-model="SMS.to"></v-text-field>
+          <v-textarea label="Escriba aquí el mensaje:" v-model="SMS.message"></v-textarea>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions class="grey lighten-4">
@@ -157,6 +128,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog width="100" v-model="espere">
+      <v-card>
+        <v-card-text>
+          ESPERE
+          <v-progress linear infinite></v-progress>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -167,16 +146,18 @@ export default {
   name: "App",
 
   data: () => ({
-    api: "http://coopefacsa.com:3006",
+    api: "",
     usuario: { id: 0, nombre: "" },
     data: [],
     columnaDestinatarios: "",
-    mensaje: "",
+    mensaje:
+      "Sr(a): @nombre del cliente, COOPEFACSA R,L le recuerda realice pago de crédito con monto de C$@monto, de no pagar, se procederá la cobranza",
     menu: false,
     dlgSMS: false,
     dataIndex: 0,
     SMS: { to: "", message: "" },
     prefijos: [],
+    espere: false
   }),
   watch: {
     columnaDestinatarios(value) {
@@ -185,7 +166,7 @@ export default {
       if (value.toString().length === 0) {
         return;
       }
-      mv.data.forEach((fila) => {
+      mv.data.forEach(fila => {
         try {
           result = parseInt(fila[value]);
         } catch (error) {
@@ -200,20 +181,20 @@ export default {
           icon: "error",
           title: "Columna no válida",
           text:
-            "La columna elejida contiene valores no válidos para ser usada como columna de destinatarios. La columna debe contener sólo números telefónicos",
+            "La columna elejida contiene valores no válidos para ser usada como columna de destinatarios. La columna debe contener sólo números telefónicos"
         });
         mv.$set(mv, "columnaDestinatarios", "");
         mv.$refs.colDest.lazyValue = "";
         return;
       }
-    },
+    }
   },
   computed: {
     cols: function() {
       var mv = this;
       var result = [];
       if (mv.data.length > 0) {
-        Object.keys(mv.data[mv.dataIndex]).forEach((k) => {
+        Object.keys(mv.data[mv.dataIndex]).forEach(k => {
           result.push({ value: k, text: k.toUpperCase() });
         });
       }
@@ -225,7 +206,7 @@ export default {
       if (mv.data.length === 0) {
         return result;
       }
-      mv.cols.forEach((col) => {
+      mv.cols.forEach(col => {
         var rgex = new RegExp(`@${col.text.toLowerCase()}`, "g");
         var rgex2 = new RegExp(`@${col.text}`, "g");
         result = result
@@ -236,16 +217,16 @@ export default {
           .replace(rgex2, mv.data[mv.dataIndex][col.value]);
       });
       return result;
-    },
+    }
   },
   methods: {
     getPrefijos: function() {
       var mv = this;
       fetch(`${mv.api}/get?table=prefijos&fields=*`, { method: "get" })
-        .then((res) => {
+        .then(res => {
           return res.json();
         })
-        .then((r) => {
+        .then(r => {
           if (r.errno) {
             console.log(r);
           } else {
@@ -274,7 +255,7 @@ export default {
             var NombreHojas = libro.SheetNames;
             var hoja = libro.Sheets[NombreHojas[0]];
             mv.data = xlsx.utils.sheet_to_json(hoja);
-            mv.data.forEach((fila) => {
+            mv.data.forEach(fila => {
               mv.$set(fila, "enviado", "No");
             });
           };
@@ -284,17 +265,18 @@ export default {
     },
     sendSMS: function() {
       var mv = this;
-      mv.SMS.to=`+505${mv.SMS.to}`
-      var data = JSON.stringify(mv.SMS);
+      var sms = Object.assign({}, mv.SMS);
+      sms.to = `${mv.SMS.to}`;
+      var data = JSON.stringify(sms);
       fetch(`${mv.api}/sms`, {
         body: data,
         method: "POST",
-        headers: { "Content-type": "application/json" },
+        headers: { "Content-type": "application/json" }
       })
-        .then((res) => {
+        .then(res => {
           return res.json();
         })
-        .then((r) => {
+        .then(r => {
           console.log(r);
         });
     },
@@ -304,7 +286,7 @@ export default {
         mv.$swal({
           icon: "error",
           title: "Error de validación",
-          text: "No ha abierto el archivo con los datos de los destinatarios",
+          text: "No ha abierto el archivo con los datos de los destinatarios"
         });
         return;
       }
@@ -313,14 +295,18 @@ export default {
           icon: "error",
           title: "Error de validación",
           text:
-            "No se ha definido la columna que contiene los números de los destinatarios",
+            "No se ha definido la columna que contiene los números de los destinatarios"
         });
         return;
       }
-      var i = 0;
+      var i = 1;
+      mv.SMS.to = `${mv.data[i][mv.columnaDestinatarios]}`;
+      mv.SMS.message = mv.smsPreview;
+      mv.sendSMS();
+      mv.data[i].enviado = "Si";
       var interval = setInterval(function() {
         mv.dataIndex = i;
-        mv.SMS.to =`${mv.data[i][mv.columnaDestinatarios]}RS`;
+        mv.SMS.to = `${mv.data[i][mv.columnaDestinatarios]}`;
         mv.SMS.message = mv.smsPreview;
         mv.sendSMS();
         mv.data[i].enviado = "Si";
@@ -328,14 +314,14 @@ export default {
           clearInterval(interval);
         }
         i += 1;
-      }, 3000);
-    },
+      }, 10000);
+    }
   },
   mounted: function() {
     var mv = this;
     io(mv.api);
     mv.getPrefijos();
-  },
+  }
 };
 </script>
 <style lang="css" scope>
