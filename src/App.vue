@@ -151,7 +151,7 @@ export default {
     data: [],
     columnaDestinatarios: "",
     mensaje:
-      "Sr(a): @nombre del cliente, COOPEFACSA R,L le recuerda realice pago de crédito con monto de C$@monto, de no pagar, se procederá la cobranza",
+      "Sr(a): @nombre del cliente, COOPEFACSA R,L le recuerda realice pago de crédito con monto de C$@monto, de no pagar, se procederá la cobranza. Cualquier consulta comunicarse al 25750019",
     menu: false,
     dlgSMS: false,
     dataIndex: 0,
@@ -220,6 +220,12 @@ export default {
     }
   },
   methods: {
+    readTemplate:function(){
+      var mv=this
+      fetch("/plantillaSMS.txt",{method:"get"}).then(r=>{return r.text()}).then(res=>{
+        mv.mensaje=res
+      })
+    },
     getPrefijos: function() {
       var mv = this;
       fetch(`${mv.api}/get?table=prefijos&fields=*`, { method: "get" })
@@ -304,6 +310,7 @@ export default {
       mv.SMS.message = mv.smsPreview;
       mv.sendSMS();
       mv.data[i].enviado = "Si";
+      
       i+=1
       var interval = setInterval(function() {
         mv.dataIndex = i;
@@ -315,13 +322,14 @@ export default {
           clearInterval(interval);
         }
         i += 1;
-      }, 10000);
+      }, 15000);
     }
   },
   mounted: function() {
     var mv = this;
     io(mv.api);
     mv.getPrefijos();
+    mv.readTemplate()
   }
 };
 </script>
