@@ -3,8 +3,8 @@
     <v-app-bar app color="primary" dark dense>
       <v-toolbar-title>SMS</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon dark small>
-        <v-icon>mdi-account</v-icon>
+      <v-btn icon dark small :color="telefonoConectado?'green':'red'">
+        <v-icon>mdi-white-balance-sunny</v-icon>
       </v-btn>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -62,9 +62,15 @@
             <v-divider></v-divider>
             <v-card-actions class="grey lighten-4">
               <v-spacer></v-spacer>
-              <v-btn fab small color="primary" dark @click="sendMultipleSMS()">
-                <v-icon small>mdi-send</v-icon>
-              </v-btn>
+              <v-tooltip>
+                <template v-slot:activator="{on}">
+                  <v-btn fab small color="primary" dark @click="sendMultipleSMS()" :disabled="!telefonoConectado" v-on="on">
+                    <v-icon small>mdi-send</v-icon>
+                  </v-btn>
+                </template>
+                <span v-text="telefonoConectado?'Enviar':'El teléfono está desconectado. No se puede enviar'"></span>
+              <v-tooltip>
+              
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -157,7 +163,8 @@ export default {
     dataIndex: 0,
     SMS: { to: "", message: "" },
     prefijos: [],
-    espere: false
+    espere: false,
+    telefonoConectado:false
   }),
   watch: {
     columnaDestinatarios(value) {
@@ -305,14 +312,15 @@ export default {
         });
         return;
       }
-      var i = 0;
+      var i = 0;/*
       mv.SMS.to = `${mv.data[i][mv.columnaDestinatarios]}`;
       mv.SMS.message = mv.smsPreview;
       mv.sendSMS();
       mv.data[i].enviado = "Si";
       
-      i+=1
+      i+=1*/
       var interval = setInterval(function() {
+        if(mv.telefonoConectado){
         mv.dataIndex = i;
         mv.SMS.to = `${mv.data[i][mv.columnaDestinatarios]}`;
         mv.SMS.message = mv.smsPreview;
@@ -321,15 +329,22 @@ export default {
         if (i == mv.data.length - 1) {
           clearInterval(interval);
         }
-        i += 1;
+        i += 1;}
       }, 15000);
     }
   },
   mounted: function() {
     var mv = this;
-    io(mv.api);
+    var socket =io(mv.api);
     mv.getPrefijos();
     mv.readTemplate()
+    socket.on('phoneStatus',data=>{
+      console.log(data)
+      mv.telefonoConectado=data.connected
+    })
+    socket.on('connect',()=>{
+      console.log('socket conectado')
+    })
   }
 };
 </script>

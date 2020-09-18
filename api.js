@@ -30,14 +30,24 @@ const server = app.listen(port, () => {
 });
 
 const sockets = IO.listen(server)
-
+var phoneStatus={number:'',id:'',connected:false}
 sockets.on("connection",sck=>{
     console.info(`cliente id: ${sck.id} conectado`)
+    sockets.emit('phoneStatus',phoneStatus)
     sck.on("sent",data=>{
         sck.broadcast("sent",data)
     })
     sck.on("disconnect",()=>{
         console.warn(`El cliente id: ${sck.id} se ha desconectado`)
         console.log("_________________________________________________")
+        if(phoneStatus.id==sck.id){phoneStatus.connected=false;console.log('teléfono desconectado')}
+    })
+    sck.on("nombreCliente",data=>{
+        console.log('Teléfono conectado')
+        phoneStatus.id=sck.id
+        phoneStatus.number=data.number
+        phoneStatus.connected=true
+        sockets.emit('phoneStatus',phoneStatus)
+
     })
 })

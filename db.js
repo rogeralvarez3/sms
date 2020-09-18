@@ -11,7 +11,7 @@ function connect(){
 } 
 connect()
 cn.on("error",err=>{
-    console.log(err)
+    //console.log(err)
     connect()
 })
 const get = async data=>{
