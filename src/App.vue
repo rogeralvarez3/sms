@@ -59,9 +59,9 @@
             <v-divider></v-divider>
             <v-card-actions class="grey lighten-4">
               <v-spacer></v-spacer>
-              <v-tooltip>
+              <v-tooltip top>
                 <template v-slot:activator="{on}">
-                  <v-btn fab small dark @click="sendMultipleSMS()" :color="!telefonoConectado?'primary':'error'" v-on="on">
+                  <v-btn fab small dark @click="sendMultipleSMS()" :color="telefonoConectado?'primary':'error'" v-on="on">
                     <v-icon small>mdi-send</v-icon>
                   </v-btn>
                 </template>
