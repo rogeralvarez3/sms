@@ -3,9 +3,6 @@
     <v-app-bar app color="primary" dark dense>
       <v-toolbar-title>SMS</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon dark small :color="telefonoConectado?'green':'red'">
-        <v-icon>mdi-white-balance-sunny</v-icon>
-      </v-btn>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon dark small class="ml-2 mr-2" v-on="on" @click="dlgSMS = true">
@@ -64,7 +61,7 @@
               <v-spacer></v-spacer>
               <v-tooltip>
                 <template v-slot:activator="{on}">
-                  <v-btn fab small color="primary" dark @click="sendMultipleSMS()" :disabled="!telefonoConectado" v-on="on">
+                  <v-btn fab small dark @click="sendMultipleSMS()" :color="!telefonoConectado?'primary':'error'" v-on="on">
                     <v-icon small>mdi-send</v-icon>
                   </v-btn>
                 </template>
